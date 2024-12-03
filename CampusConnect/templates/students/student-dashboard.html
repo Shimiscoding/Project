@@ -1,0 +1,183 @@
+{% extends 'Home/student-base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Welcome Student!</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Student Dashboard</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+     
+    <!-- Statistics Row -->
+    <div class="row">
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+            <a href="{% url 'library_student' %}" class="card bg-nine w-100">
+                <div class="card-body">
+                    <div class="db-widgets d-flex justify-content-between align-items-center">
+                        <div class="db-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="db-info">
+                            <h3>Library</h3>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+            <a href="{% url 'thread_list_student' %}" class="card bg-six w-100">
+                <div class="card-body">
+                    <div class="db-widgets d-flex justify-content-between align-items-center">
+                        <div class="db-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="db-info">
+                            <h3>Threads</h3>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+            <a href="{% url 'event_list_student' %}" class="card bg-ten w-100">
+                <div class="card-body">
+                    <div class="db-widgets d-flex justify-content-between align-items-center">
+                        <div class="db-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="db-info">
+                            <h3>Events</h3>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+            <a href="{% url 'announcements' %}" class="card bg-eleven w-100">
+                <div class="card-body">
+                    <div class="db-widgets d-flex justify-content-between align-items-center">
+                        <div class="db-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="db-info">
+                            <h3>Announcements</h3>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Today's Events Section -->
+        <div class="col-12 col-lg-12 col-xl-8">
+            <div class="card flex-fill">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <h5 class="card-title">Today’s Events</h5>
+                        </div>
+                        <div class="col-6">
+                            <span class="float-right view-link"><a href="#">View All Events</a></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dash-circle">
+                    <div class="row">
+                        {% for event in events_today %}
+                            <div class="col-12 col-lg-6 col-xl-2 dash-widget3">
+                                <div class="card-body dash-widget1">
+                                    <div class="dash-details">
+                                        <h4>{{ event.title }}</h4>
+                                        <ul>
+                                            <li><i class="fas fa-clock"></i> {{ event.start_time|date:"h:i a" }} - {{ event.end_time|date:"h:i a" }}</li>
+                                            <li><i class="fas fa-book-open"></i> {{ event.location }}</li>
+                                            <li><i class="fas fa-hourglass-end"></i> {{ event.description }}</li>
+                                        </ul>
+                                        <div class="dash-btn">
+                                            <a href="{% url 'event_detail' pk=event.pk %}" class="btn btn-info btn-border">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12"> <be
+                                <p>No events scheduled for today.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Threads Section -->
+        <div class="col-12 col-lg-12 col-xl-4 d-flex">
+            <div class="card flex-fill">
+                <div class="card-header">
+                    <h5 class="card-title">Threads</h5>
+                </div>
+                <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                    <div class="teaching-card">
+                        <ul class="activity-feed">
+                            {% for thread in threads %}
+                                <li class="feed-item">
+                                    <div class="feed-date1">{{ thread.created_at|date:"M d, h:i a" }}</div>
+                                    <span class="feed-text1"><a href="{% url 'thread_detail_student' thread.id %}">{{ thread.title }}</a></span>
+                                    <p>{{ thread.content|truncatewords:10 }}</p>
+                                    <p>Category: {{ thread.category.name }}</p>
+                                </li>
+                            {% empty %}
+                                <li>No threads available.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+    <footer>
+        <p>Copyright © 2020 Dreamguys.</p>
+    </footer>
+
+</div>
+
+
+<script src="{%static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+
+<script src="{%static 'assets/js/popper.min.js' %}"></script>
+<script src="{%static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+
+<script src="{%static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+
+<script src="{%static 'assets/plugins/apexchart/apexcharts.min.js' %}"></script>
+<script src="{%static 'assets/plugins/apexchart/chart-data.js' %}"></script>
+
+<script src="{%static 'assets/plugins/simple-calendar/jquery.simple-calendar.js' %}"></script>
+<script src="{%static 'assets/js/calander.js' %}"></script>
+
+<script src="{%static 'assets/js/circle-progress.min.js' %}"></script>
+
+<script src="{%static 'assets/js/script.js' %}"></script>
+</body>
+
+<!-- Mirrored from preschool.dreamguystech.com/html-template/student-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Oct 2021 11:11:43 GMT -->
+</html>
+
+{% endblock %}

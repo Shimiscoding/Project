@@ -1,0 +1,146 @@
+{% extends 'Home/student-base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">{{ user_type }} Details</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active">{{ user_type }} Details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="about-info">
+                            <h4>About Me</h4>
+                            <div class="media mt-3">
+                                <img src="{% if user_type == 'Student' %}
+                                {% if profile_data.student_image %}
+                                    {{ profile_data.student_image.url }}
+                                {% else %}
+                                    {% static 'assets/img/default-profile.png' %}
+                                {% endif %}
+                              {% elif user_type == 'Teacher' %}
+                                {% if profile_data.teacher_image %}
+                                    {{ profile_data.teacher_image.url }}
+                                {% else %}
+                                    {% static 'assets/img/default-profile.png' %}
+                                {% endif %}
+                              {% else %}
+                                {% if profile_data.admin_image %}
+                                    {{ profile_data.admin_image.url }}
+                                {% else %}
+                                    {% static 'assets/img/default-profile.png' %}
+                                {% endif %}
+                              {% endif %}" 
+                         class="mr-3" 
+                         alt="{{ user_type }} Image">
+                                <div class="media-body">
+                                    <ul>
+                                        <li>
+                                            <span class="title-span">Full Name: </span>
+                                            <span class="info-span">{{ user.first_name }} {{ user.last_name }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Email: </span>
+                                            <span class="info-span">{{ user.email }}</span>
+                                        </li>
+                                        {% if user_type == "Student" %}
+                                        <li>
+                                            <span class="title-span">Department: </span>
+                                            <span class="info-span">{{ profile_data.section }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Mobile: </span>
+                                            <span class="info-span">{{ profile_data.mobile_number }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Parent's Email: </span>
+                                            <span class="info-span">{{ profile_data.parent.father_email }}</span>
+                                        </li>
+                                        {% elif user_type == "Teacher" %}
+                                        <li>
+                                            <span class="title-span">Subject: </span>
+                                            <span class="info-span">{{ profile_data.subject }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title-span">Department: </span>
+                                            <span class="info-span">{{ profile_data.department }}</span>
+                                        </li>
+                                        {% elif user_type == "Admin" %}
+                                        <li>
+                                            <span class="title-span">Role: </span>
+                                            <span class="info-span">Administrator</span>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if user_type == "Student" or user_type == "Teacher" %}
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <h5>Address</h5>
+                                <p>Permanent: {{ profile_data.permanent_address }}</p>
+                                <p>Present: {{ profile_data.present_address }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if messages %}
+                <div class="alert alert-info">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <h5>Settings</h5>
+                        <form method="POST" action="{% url 'change_password' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" class="form-control" name="current_password" required>
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" class="form-control" name="new_password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Copyright © 2024 Dreamguys.</p>
+    </footer>
+
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+{% endblock %}

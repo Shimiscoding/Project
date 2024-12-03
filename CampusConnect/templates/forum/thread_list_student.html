@@ -1,0 +1,56 @@
+{% extends 'Home/student-base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="container-fluid mt-5">
+            <h1 class="text-center mb-4">Threads in {{ category.name }}</h1>
+            <div class="row">
+                {% for thread in threads %}
+                    <div class="col-12 mb-3">
+                        <div class="card post-card shadow-sm">
+                            <!-- Make the entire card clickable -->
+                            <a href="{% url 'thread_detail_student' thread.id %}" class="text-dark">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-2 font-weight-bold">
+                                        {{ thread.title }}
+                                    </h5>
+                                    <p class="card-text small">{{ thread.created_at|date:"F j, Y" }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center">
+                        <p class="text-muted small">No threads available in this category.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+
+<style>
+    .card {
+        cursor: pointer;  /* Change cursor to indicate clickable area */
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transition */
+    }
+
+    .card:hover {
+        transform: scale(1.05);  /* Slightly enlarge card on hover */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow on hover */
+        background-color: #f8f9fa;  /* Light background change on hover */
+    }
+</style>
+
+{% endblock %}
+
+

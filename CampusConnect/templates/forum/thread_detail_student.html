@@ -1,0 +1,166 @@
+{% extends 'Home/student-base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="container-fluid mt-5">
+            <!-- Thread Title and Category -->
+            <h1 class="text-center mb-4">{{ thread.title }}</h1>
+            <p class="text-center">Category: {{ category.name }}</p>
+            <p class="text-center small text-muted">{{ thread.created_at|date:"F j, Y" }}</p>
+            
+            <!-- Thread Content -->
+            <div class="thread-content mb-4">
+                <p>{{ thread.content }}</p>
+            </div>
+
+            <!-- Voting Section (Show if voting is enabled) -->
+            {% if thread.enable_voting %}
+            <div class="voting-options mt-4">
+                <h4>Voting Options:</h4>
+                <form id="voteForm" method="POST" action="{% url 'vote_thread' thread.id %}">
+                    {% csrf_token %}
+                    
+                    <!-- Voting options list -->
+                    <div class="d-flex justify-content-start">
+                        {% for option in thread.voting_options.all %}
+                            <div class="card vote-card mr-3" style="cursor: pointer; width: 120px; padding: 10px;">
+                                <input type="radio" name="vote" value="{{ option.id }}" id="option{{ option.id }}" class="d-none">
+                                <label for="option{{ option.id }}" class="card-body text-center p-2" style="cursor: pointer;">
+                                    <h5 class="card-title">{{ option.option_text }}</h5>
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <input type="radio" name="vote" value="{{ option.id }}" class="mr-2" id="radio{{ option.id }}" style="transform: scale(1.5);">
+                                    </div>
+                                </label>
+                            </div>
+                        {% empty %}
+                            <p>No voting options available.</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-warning mt-3" style="width: 100%;">Vote</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Voting Graph Section -->
+            {% if thread.voting_options.all %}
+            <div class="vote-graph mt-5">
+                <canvas id="voteGraph" style="width: 100%; height: 300px;"></canvas>
+            </div>
+        {% else %}
+            <p>No voting data available.</p>
+        {% endif %}
+
+            <!-- Comment Section -->
+            <div class="card mt-4" id="comment-card">
+                <div class="card-body">
+                    <h5 class="card-title">Comments</h5>
+                    <div class="comment-list">
+                        {% for comment, user_comment in comments_with_user_status %}
+                            <div class="comment d-flex mb-3 {% if user_comment %}justify-content-end{% else %}justify-content-start{% endif %}" id="comment-{{ comment.id }}">
+                                <div class="comment-avatar">
+                                    <img src="{% static 'assets/img/default-profile.png' %}" alt="{{ comment.user.first_name }}'s Avatar" class="rounded-circle" width="40" height="40">
+                                </div>
+                                <div class="comment-bubble p-2 rounded ml-2">
+                                    <strong>{{ comment.user.first_name }} {{ comment.user.last_name }}</strong>
+                                    <p>{{ comment.text }}</p>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p>No comments yet.</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Comment Form -->
+                    <div class="comments mt-4">
+                        <h6>Post a Comment</h6>
+                        <form method="POST" action="{% url 'thread_detail' thread.id %}">
+                            {% csrf_token %}
+                            <textarea name="text" class="form-control mb-3" rows="3" placeholder="Add a comment..."></textarea>
+                            <button type="submit" class="btn btn-dark">Post Comment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+
+    <!-- Chart.js for Voting Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = [
+            {% for option in thread.voting_options.all %}
+                "{{ option.option_text }}",
+            {% endfor %}
+        ];
+    
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Votes',
+                data: [
+                    {% for option in thread.voting_options.all %}
+                        {{ option.votes|default:0 }},
+                    {% endfor %}
+                ],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+    
+        const config = {
+            type: 'bar',  // You can change this to 'pie', 'line', etc.
+            data: data,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+    
+        window.addEventListener('load', function() {
+            const voteGraph = new Chart(document.getElementById('voteGraph').getContext('2d'), config);
+        });
+
+        // JavaScript Validation for Voting Form
+        document.getElementById("voteForm").addEventListener("submit", function(event) {
+            // Check if a vote option is selected
+            const selectedOption = document.querySelector('input[name="vote"]:checked');
+            const voteWarning = document.getElementById("vote-warning");
+
+            // If no option is selected, show the warning and prevent form submission
+            if (!selectedOption) {
+                event.preventDefault();  // Prevent form submission
+                voteWarning.style.display = "block";  // Show warning message
+            } else {
+                voteWarning.style.display = "none";  // Hide warning message
+            }
+        });
+    </script>
+</div>
+{% endblock %}

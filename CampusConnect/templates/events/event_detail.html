@@ -1,0 +1,72 @@
+{% extends 'Home/admin-base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="container-fluid mt-5">
+            <!-- Event Title -->
+            <h1 class="text-center mb-4">{{ event.title }}</h1>
+            <p class="text-center small text-muted">{{ event.start_time|date:"F j, Y, g:i a" }} - {{ event.end_time|date:"F j, Y, g:i a" }}</p>
+
+            <!-- Event Details -->
+            <div class="event-details mb-4">
+                <h5>Description:</h5>
+                <p>{{ event.description }}</p>
+                <h5>Location:</h5>
+                <p>{{ event.location }}</p>
+            </div>
+
+            <!-- RSVP Section -->
+            <div class="rsvp-section mt-4">
+                <h5>Are you attending this event?:</h5>
+                {% if rsvp %}
+                    {% if rsvp.attending %}
+                        <p class="text-success">You are attending this event.</p>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Cancel RSVP</button>
+                        </form>
+                    {% else %}
+                        <p class="text-danger">You are not attending this event.</p>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">RSVP to Event</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">You have not RSVP'd yet.</p>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">RSVP to Event</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- Attendees Section -->
+            <div class="attendees-section mt-4">
+                <h5>Attendees:</h5>
+                {% if attendees %}
+                    <ul class="list-group">
+                        {% for attendee in attendees %}
+                            <li class="list-group-item">
+                                {{ attendee.user.first_name }} {{ attendee.user.last_name }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No one has joined this event yet.</p>
+                {% endif %}
+            </div>
+
+          
+               
+
+    <!-- Scripts -->
+    <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+</div>
+{% endblock %}

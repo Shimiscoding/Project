@@ -1,0 +1,105 @@
+{% extends 'Home/admin-base.html' %}
+{% load static %}
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="container-fluid mt-5">
+            <!-- Page Title -->
+            <h1 class="text-center mb-4">Create a New Thread</h1>
+            <!-- Form Container -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <!-- Form -->
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="title">Title</label>
+                                    <input type="text" class="form-control" name="title" id="title" required>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="content">Content</label>
+                                    <textarea class="form-control" name="content" id="content" rows="5" required></textarea>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select name="category" id="category" class="form-control">
+                                        {% for category in categories %}
+                                            <option value="{{ category.name }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            
+                                <!-- Enable Voting Checkbox -->
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="enable_voting" id="enable_voting" class="form-check-input">
+                                    <label class="form-check-label" for="enable_voting">Enable Voting</label>
+                                </div>
+                            
+                                <!-- Voting Options -->
+                                <div id="voting-options" style="display: none;">
+                                    <label>Voting Options:</label>
+                                    <div id="options-container">
+                                        <div class="form-group option-field d-flex align-items-center">
+                                            <input type="text" name="options[]" class="form-control" placeholder="Option 1">
+                                            <button type="button" class="btn btn-danger btn-sm ml-2 remove-option">Remove</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="add-option" class="btn btn-secondary mt-2">Add More Options</button>
+                                </div>
+                            
+                                <button type="submit" class="btn btn-primary mt-3">Create Thread</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+<script>
+    // Show or hide voting options based on the checkbox
+    document.getElementById('enable_voting').addEventListener('change', function() {
+        const votingOptions = document.getElementById('voting-options');
+        if (this.checked) {
+            votingOptions.style.display = 'block';
+        } else {
+            votingOptions.style.display = 'none';
+        }
+    });
+
+    // Add more voting options dynamically
+    document.getElementById('add-option').addEventListener('click', function() {
+        const optionsContainer = document.getElementById('options-container');
+        const optionCount = optionsContainer.querySelectorAll('.option-field').length + 1;
+        
+        const newOption = document.createElement('div');
+        newOption.className = 'form-group option-field d-flex align-items-center';
+        newOption.innerHTML = `
+            <input type="text" name="options[]" class="form-control" placeholder="Option ${optionCount}">
+            <button type="button" class="btn btn-danger btn-sm ml-2 remove-option">Remove</button>
+        `;
+        
+        optionsContainer.appendChild(newOption);
+    });
+
+    // Remove a voting option
+    document.getElementById('options-container').addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('remove-option')) {
+            const optionField = e.target.closest('.option-field');
+            optionField.remove();
+        }
+    });
+</script>
+
+{% endblock %}

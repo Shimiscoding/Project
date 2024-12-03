@@ -1,0 +1,47 @@
+{% extends 'Home/admin-base.html' %}
+{% load static %}
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="container-fluid mt-5">
+            <h1 class="text-center mb-4">Latest Announcements</h1>
+            <div class="row">
+                {% for announcement in announcements %}
+                    <div class="col-12 mb-3"> <!-- Full-width announcement card -->
+                        <div class="card post-card shadow-sm">
+                            <div class="card-body">
+                                <!-- Announcement Title -->
+                                <h5 class="card-title mb-2 font-weight-bold">{{ announcement.title }}</h5>
+                                <!-- Creator's Name -->
+                                <p class="card-text text-muted mb-1">
+                                    <small><strong>Created by:</strong> {{ announcement.user.username }}</small>
+                                </p>
+                                <!-- Date of Creation -->
+                                <p class="card-text text-muted mb-2">
+                                    <small>Created on: {{ announcement.created_at|date:"Y-m-d" }}</small>
+                                </p>
+                                <!-- Announcement Summary or Intro -->
+                                <p class="card-text small">{{ announcement.message|truncatewords:30 }}</p>
+                                <!-- Link to Full Announcement -->
+                                <a href="{% url 'admin_announcement_detail' id=announcement.id %}" class="btn btn-sm btn-dark mt-2">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <!-- Message if no announcements are available -->
+                    <div class="col-12 text-center">
+                        <p class="text-muted small">No announcements available at the moment.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+{% endblock %}

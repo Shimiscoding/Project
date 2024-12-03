@@ -1,0 +1,57 @@
+{% extends 'Home/admin-base.html' %}
+{% load static %}
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="container-fluid mt-5">
+            <!-- Page Title -->
+            <h1 class="text-center mb-4">Create a New Event</h1>
+            <!-- Form Container -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <!-- Form -->
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="title">Event Title</label>
+                                    <input type="text" class="form-control" name="title" id="title" required>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea class="form-control" name="description" id="description" rows="5" required></textarea>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="start_time">Start Time</label>
+                                    <input type="datetime-local" class="form-control" name="start_time" id="start_time" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="end_time">End Time</label>
+                                    <input type="datetime-local" class="form-control" name="end_time" id="end_time" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="location">Location</label>
+                                    <input type="text" class="form-control" name="location" id="location" required>
+                                </div>
+                            
+                                <button type="submit" class="btn btn-primary mt-3">Create Event</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+{% endblock %}

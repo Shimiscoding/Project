@@ -1,0 +1,135 @@
+{% extends 'Home/admin-base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Create Announcement</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Announcements</a></li>
+                        <li class="breadcrumb-item active">Create Announcement</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">  <!-- Added enctype for file upload -->
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>Announcement Information</span></h5>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="title">Title:</label>
+                                        <input name="title" id="title" class="form-control" value="{{ title }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="message">Message:</label>
+                                        <textarea name="message" id="message" class="form-control" required>{{ message }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="category">Category:</label>
+                                        <select id="category" name="category" class="form-control" required>
+                                            <option value="" {% if not category %}selected{% endif %}>Select Category</option>
+                                            <option value="academics" {% if category == 'academics' %}selected{% endif %}>Academics</option>
+                                            <option value="events" {% if category == 'events' %}selected{% endif %}>Events</option>
+                                            <option value="alerts" {% if category == 'alerts' %}selected{% endif %}>Alerts</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Event date field, visible only for 'events' category -->
+                                <div class="col-12" id="eventDatePicker" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="event_date">Event Date:</label>
+                                        <input type="date" name="event_date" id="event_date" class="form-control">
+                                    </div>
+                                </div>
+
+                                <!-- File upload section -->
+                                <div class="col-12" id="file-upload-section" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="file">Upload File (Optional):</label>
+                                        <input type="file" name="file" id="file" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Create Announcement</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if success %}
+        <div class="alert alert-success mt-3">
+            Announcement created successfully!
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+<script>
+    $(document).ready(function () {
+        // Show or hide sections based on category selection
+        $('#category').on('change', function () {
+            const category = $(this).val();
+
+            // Show event date picker for 'events' category
+            if (category === 'events') {
+                $('#eventDatePicker').fadeIn();
+                $('#file-upload-section').fadeOut(); // Hide file upload for events
+            } else if (category === 'academics') {
+                $('#file-upload-section').fadeIn();
+                $('#eventDatePicker').fadeOut(); // Hide date picker for academics
+            } else {
+                $('#eventDatePicker').fadeOut();
+                $('#file-upload-section').fadeOut(); // Hide both for 'alerts' and others
+            }
+        });
+
+        // Initialize based on current value of the category dropdown
+        const initialCategory = $('#category').val();
+        if (initialCategory === 'events') {
+            $('#eventDatePicker').show();
+            $('#file-upload-section').hide();
+        } else if (initialCategory === 'academics') {
+            $('#file-upload-section').show();
+            $('#eventDatePicker').hide();
+        } else {
+            $('#eventDatePicker').hide();
+            $('#file-upload-section').hide();
+        }
+    });
+</script>
+
+{% endblock %}

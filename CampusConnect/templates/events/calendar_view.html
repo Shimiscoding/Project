@@ -1,0 +1,169 @@
+{% extends 'Home/admin-base.html' %}
+{% load static %}
+
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Calendar</title>
+    
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <style>
+        body {
+            background-color: #f4f7fc;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-body {
+            background-color: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .calendar-container {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #calendar {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Header customizations */
+        .fc-toolbar {
+            font-size: 1.1rem;
+        }
+
+        .fc-button {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .fc-button:hover {
+            background-color: #0056b3;
+        }
+
+        .fc-button-primary {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .fc-daygrid-event {
+            background-color: #f56954 !important;
+            color: white !important;
+        }
+
+        .fc-daygrid-day-number {
+            font-weight: bold;
+        }
+
+        .event-tooltip {
+            font-size: 14px;
+            color: #333;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card calendar-container">
+                    <div class="card-header">
+                        <h3 class="card-title">Event Calendar</h3>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- FullCalendar -->
+                        <div id="calendar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Moment.js -->
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Prepare the events data
+        const events = [
+            {% for event in events %}
+            {
+                title: '{{ event.title }}',
+                start: '{{ event.start_time|date:"Y-m-d H:i:s" }}',
+                end: '{{ event.end_time|date:"Y-m-d H:i:s" }}',
+                description: '{{ event.description }}',
+                backgroundColor: '#f56954',  // Customize the background color if needed
+                borderColor: '#f56954',      // Customize the border color if needed
+                textColor: '#fff'            // Text color for events
+            },
+            {% empty %}
+            // No events, leave the array empty
+            {% endfor %}
+        ];
+
+        // Initialize FullCalendar
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            initialView: 'dayGridMonth',  // Default view for the calendar
+            events: events,               // Pass the event array to FullCalendar
+            editable: true,               // Allow event editing
+            droppable: true,              // Allow dropping events
+            eventClick: function(info) {
+                alert("Event: " + info.event.title + "\nDescription: " + info.event.extendedProps.description);
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+
+<!-- Static scripts -->
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+</body>
+</html>
+
+{% endblock %}

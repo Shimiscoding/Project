@@ -1,0 +1,102 @@
+{% extends 'Home/admin-base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div class="row align-items-center">
+                <div class="col">
+                    <a href="{% url 'admin_announcements' %}" class="btn btn-outline-primary btn-sm float-left">Back to Announcements</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Announcement Title -->
+        <div class="col">
+            <h3 class="page-title text-center ">Announcement Details</h3>
+        </div>
+        
+        <br>
+
+        <!-- Announcement Section -->
+        <div class="card shadow-lg border-0 rounded mb-4">
+            <div class="card-header text-white text-center">
+                <h4 class="font-weight-bold" style="color: black;">{{ announcement.title }}</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4"><strong>Category:</strong> {{ announcement.category }}</p>
+                <p class="text-muted mb-4"><strong>Created on:</strong> {{ announcement.created_at|date:"Y-m-d" }}</p>
+                <p class="lead">{{ announcement.message }}</p>
+                <hr class="my-4">
+            </div>
+
+            <!-- Edit and Delete Buttons -->
+            <div class="card-body text-center">
+                <a href="{% url 'edit_announcement' id=announcement.id %}" class="btn btn-primary btn-sm mr-2">Edit Announcement</a>
+                <a href="{% url 'delete_announcement' id=announcement.id %}" class="btn btn-danger btn-sm">Delete Announcement</a>
+            </div>
+
+            <!-- File Attachment -->
+            {% if announcement.file %}
+            <div class="card-body">
+                <hr class="my-4">
+                <p class="lead">
+                    <strong>File attached:</strong> {{ announcement.file.name }}
+                    <a href="{{ announcement.file.url }}" id="download-link" class="btn btn-success btn-sm" download 
+                       onclick="showDownloadingMessage()">Download File</a>
+                </p>
+                <p id="downloading-message" style="display:none;">Downloading...</p>
+            </div>
+            {% endif %}
+
+            <!-- Comments Section -->
+            <div class="card-body">
+                <h5 class="font-weight-bold">Comments</h5>
+                {% if comments %}
+                    <div class="comments-list">
+                        {% for comment in comments %}
+                            <div class="comment-item mb-3">
+                                <div class="media">
+                                    <img class="mr-3 rounded-circle" src="{% static 'assets/img/default-profile.png' %}" alt="User avatar" width="40" height="40">
+                                    <div class="media-body">
+                                        <h6 class="mt-0">{{ comment.user.first_name }} {{ comment.user.last_name }}</h6>
+                                        <p>{{ comment.text }}</p>
+                                        <small class="text-muted">Posted on {{ comment.created_at|date:"Y-m-d" }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No comments yet. Be the first to comment!</p>
+                {% endif %}
+            </div>
+
+            <!-- Add Comment Section -->
+            {% if user.is_authenticated %}
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <textarea name="text" class="form-control" rows="4" placeholder="Write your comment here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-sm mt-3">Post Comment</button>
+                </form>
+            </div>
+            {% else %}
+                <p class="text-muted mt-3">You must <a href="{% url 'login' %}">log in</a> to post a comment.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+
+{% endblock %}

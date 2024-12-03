@@ -1,0 +1,58 @@
+{% extends 'Home/admin-base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center mt-4">Academic Announcements</h1>
+                <p class="text-center">Browse through all the academic announcements below.</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% if academic_announcements %}
+                {% for announcement in academic_announcements %}
+                <div class="col-md-4">
+                    <!-- Make the card clickable with hover animation -->
+                    <a href="{% url 'admin_announcement_detail' announcement.id %}" 
+                       class="card mb-4 text-decoration-none text-dark hover-card" 
+                       style="display: block; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ announcement.title }}</h5>
+                            <p class="card-text">{{ announcement.message|truncatewords:20 }}</p>
+                            <p><strong>Category:</strong> {{ announcement.category }}</p>
+                            {% if announcement.event_date %}
+                                <p><strong>Event Date:</strong> {{ announcement.event_date|date:"F j, Y" }}</p>
+                            {% endif %}
+                            {% if announcement.file %}
+                                <p class="text-muted small">Attachment available</p>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-12">
+                    <p class="text-center">No academic announcements available at the moment.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for Hover Effect -->
+<style>
+    .hover-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+{% endblock %}
